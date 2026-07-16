@@ -29,22 +29,22 @@ tasks = [
 next_id = 4
 
 
-@app.get("/")
+@app.get("/", description="API info: name, version, available endpoints.")
 def root():
     return {"name": "Task API", "version": "1.0", "endpoints": ["/tasks"]}
 
 
-@app.get("/health")
+@app.get("/health", description="Liveness check for the server.")
 def health():
     return {"status": "ok"}
 
 
-@app.get("/tasks")
+@app.get("/tasks", description="List all tasks.")
 def list_tasks():
     return tasks
 
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", description="Get one task by id. 404 if it doesn't exist.")
 def get_task(task_id: int):
     for task in tasks:
         if task["id"] == task_id:
@@ -52,7 +52,11 @@ def get_task(task_id: int):
     raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
 
 
-@app.post("/tasks", status_code=status.HTTP_201_CREATED)
+@app.post(
+    "/tasks",
+    status_code=status.HTTP_201_CREATED,
+    description="Create a task. Requires a non-empty title; done defaults to false.",
+)
 def create_task(body: TaskIn):
     global next_id
     if not body.title.strip():
@@ -63,7 +67,10 @@ def create_task(body: TaskIn):
     return task
 
 
-@app.put("/tasks/{task_id}")
+@app.put(
+    "/tasks/{task_id}",
+    description="Update a task's title and/or done status. 404 if unknown id.",
+)
 def update_task(task_id: int, body: TaskUpdate):
     for task in tasks:
         if task["id"] == task_id:
@@ -77,7 +84,11 @@ def update_task(task_id: int, body: TaskUpdate):
     raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
 
 
-@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete(
+    "/tasks/{task_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    description="Delete a task. 404 if unknown id.",
+)
 def delete_task(task_id: int):
     for i, task in enumerate(tasks):
         if task["id"] == task_id:
