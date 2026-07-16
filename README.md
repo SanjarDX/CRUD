@@ -38,7 +38,7 @@ content-type: application/json
 
 Full CRUD cycle tested via "Try it out" at `/docs`:
 
-![Swagger UI](docs/swagger.png)
+![Swagger UI](docs/swagger.jpg)
 
 ## Mortality experiment
 
