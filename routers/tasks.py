@@ -8,12 +8,12 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
 @router.get("", description="List all tasks.")
-def list_tasks():
+async def list_tasks():
     return tasks
 
 
 @router.get("/{task_id}", description="Get one task by id. 404 if it doesn't exist.")
-def get_task(task_id: int):
+async def get_task(task_id: int):
     task = find_task(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
@@ -25,7 +25,7 @@ def get_task(task_id: int):
     status_code=status.HTTP_201_CREATED,
     description="Create a task. Requires a non-empty title; done defaults to false.",
 )
-def create_task(body: TaskIn):
+async def create_task(body: TaskIn):
     if not body.title.strip():
         raise HTTPException(status_code=400, detail="title is required")
     task = {"id": get_next_id(), "title": body.title, "done": False}
@@ -37,7 +37,7 @@ def create_task(body: TaskIn):
     "/{task_id}",
     description="Update a task's title and/or done status. 404 if unknown id.",
 )
-def update_task(task_id: int, body: TaskUpdate):
+async def update_task(task_id: int, body: TaskUpdate):
     task = find_task(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
@@ -55,7 +55,7 @@ def update_task(task_id: int, body: TaskUpdate):
     status_code=status.HTTP_204_NO_CONTENT,
     description="Delete a task. 404 if unknown id.",
 )
-def delete_task(task_id: int):
+async def delete_task(task_id: int):
     task = find_task(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail=f"Task {task_id} not found")

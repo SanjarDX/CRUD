@@ -1,16 +1,15 @@
+from itertools import count
+
 tasks = [
     {"id": 1, "title": "Buy milk", "done": False},
     {"id": 2, "title": "Write README", "done": False},
     {"id": 3, "title": "Learn FastAPI", "done": True},
 ]
-_next_id = 4
+_id_counter = count(4)
 
 
 def get_next_id() -> int:
-    global _next_id
-    value = _next_id
-    _next_id += 1
-    return value
+    return next(_id_counter)
 
 
 def find_task(task_id: int):

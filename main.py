@@ -12,12 +12,12 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 @app.get("/", description="API info: name, version, available endpoints.")
-def root():
+async def root():
     return {"name": "Task API", "version": "1.0", "endpoints": ["/tasks"]}
 
 
 @app.get("/health", description="Liveness check for the server.")
-def health():
+async def health():
     return {"status": "ok"}
 
 
