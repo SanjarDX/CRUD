@@ -29,9 +29,7 @@ async def get_task(task_id: int):
 async def create_task(body: TaskIn):
     if not body.title.strip():
         raise HTTPException(status_code=400, detail="title is required")
-    task = {"id": get_next_id(), "title": body.title, "done": False}
-    tasks.append(task)
-    return task
+    return db.create_task(body.title)
 
 
 @router.put(
