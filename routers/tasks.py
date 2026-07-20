@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import Response
 
+import db
 from models import TaskIn, TaskUpdate
 from storage import tasks, find_task, get_next_id
 
@@ -9,12 +10,12 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 @router.get("", description="List all tasks.")
 async def list_tasks():
-    return tasks
+    return db.list_tasks()
 
 
 @router.get("/{task_id}", description="Get one task by id. 404 if it doesn't exist.")
 async def get_task(task_id: int):
-    task = find_task(task_id)
+    task = db.get_task(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
     return task

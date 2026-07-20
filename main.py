@@ -1,9 +1,19 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from db import init_db
 from routers.tasks import router as tasks_router
 
-app = FastAPI(title="Task API", version="1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Task API", version="1.0", lifespan=lifespan)
 
 
 @app.exception_handler(HTTPException)
