@@ -3,7 +3,6 @@ from fastapi.responses import Response
 
 import db
 from models import TaskIn, TaskUpdate
-from storage import tasks, find_task, get_next_id
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -37,15 +36,11 @@ async def create_task(body: TaskIn):
     description="Update a task's title and/or done status. 404 if unknown id.",
 )
 async def update_task(task_id: int, body: TaskUpdate):
-    task = find_task(task_id)
-    if task is None:
-        raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
     if body.title is not None and not body.title.strip():
         raise HTTPException(status_code=400, detail="title cannot be empty")
-    if body.title is not None:
-        task["title"] = body.title
-    if body.done is not None:
-        task["done"] = body.done
+    task = db.update_task(task_id, body.title, body.done)
+    if task is None:
+        raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
     return task
 
 
@@ -55,8 +50,7 @@ async def update_task(task_id: int, body: TaskUpdate):
     description="Delete a task. 404 if unknown id.",
 )
 async def delete_task(task_id: int):
-    task = find_task(task_id)
-    if task is None:
+    deleted = db.delete_task(task_id)
+    if not deleted:
         raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
-    tasks.remove(task)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
